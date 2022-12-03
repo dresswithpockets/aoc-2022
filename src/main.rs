@@ -1,4 +1,6 @@
 mod day1;
+mod day2;
+mod day3;
 
 use std::env;
 use std::io;
@@ -8,7 +10,7 @@ fn print_usage(cmd: &String) {
 }
 
 fn run_all() -> io::Result<()> {
-    day1::run()
+    day1::run().and(day2::run()).and(day3::run())
 }
 
 fn main() -> io::Result<()> {
@@ -25,9 +27,15 @@ fn main() -> io::Result<()> {
 
     let result = match &day[..] {
         "day1" => match &variant[..] {
-            "functional" => day1_functional(),
-            _ => day1_progscan(),
+            "functional" => day1::functional(),
+            _ => day1::progscan(),
         },
+        "day2" => match &variant[..] {
+            _ => day2::functional(),
+        },
+        "day3" => match &variant[..] {
+            _ => day3::realistic(),
+        }
         _ => Err(io::Error::new(io::ErrorKind::Other, "oh no!")),
     };
 
