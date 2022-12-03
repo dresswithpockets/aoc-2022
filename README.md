@@ -19,4 +19,4 @@ Solutions written in Rust. Screenshots taken using [rayso](https://ray.so/).
 
 ## Day 3
 ### Functional (and ugly)
-<img src="images/day3_ugly.png" />
+<img src="images/day3_ugly_.png" />
