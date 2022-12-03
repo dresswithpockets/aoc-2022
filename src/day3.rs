@@ -65,10 +65,9 @@ impl<'a> From<&'a[Sack]> for Group<'a> {
         Group {
             sacks: sacks,
             badge_id: (0usize..52usize)
-                .filter(|i| {
-                    sacks.into_iter()
-                        .all(|sack| sack.has_in_either(*i))
-                }).nth(0).unwrap(),
+                .filter(|i| sacks.into_iter().all(|sack| sack.has_in_either(*i)))
+                .nth(0)
+                .unwrap(),
         }
     }
 }
@@ -98,15 +97,61 @@ pub fn realistic() -> io::Result<()> {
             let badge_sum = id_to_priority(group.badge_id);
             (misplaced_sum, badge_sum)
         })
-        .fold((0, 0), |acc, e| (acc.0 + e.0, acc.1 + e.1));
+        .reduce(|acc, e| (acc.0 + e.0, acc.1 + e.1))
+        .unwrap();
 
     println!("        part 1: {}", misplaced_sum);
     println!("        part 2: {}", badge_sum);
+    println!("");
 
+    Ok(())
+}
+
+pub fn ugly() -> io::Result<()> {
+
+    println!("    Functional Ugly:");
+
+    let sacks: Vec<Vec<(usize, usize)>> = fs::read_to_string("input/day3.txt")
+        .unwrap()
+        .split("\n")
+        .map(|line| {
+            let (left_str, right_str) = line.split_at(line.len() / 2);
+            let occurances: Vec<(usize, usize)> = ('a'..='z').chain('A'..='Z')
+                .map(|c| (left_str.matches(c).count(), right_str.matches(c).count()))
+                .collect();
+            occurances
+        })
+        .collect();
+    
+    let (misplaced_sum, badge_sum) = sacks.chunks(3)
+        .map(|group| {
+            let misplaced_priority = group.into_iter()
+                .map(|sack| (0usize..52usize)
+                     .map(|i| if sack[i].0 > 0 && sack[i].1 > 0 {
+                         1 + i as u32
+                     } else {
+                         0 
+                     })
+                     .sum::<u32>())
+                .sum::<u32>();
+            let badge_priority = (0usize..52usize)
+                .filter(|i| group.into_iter()
+                        .all(|sack| sack[*i].0 > 0 || sack[*i].1 > 0))
+                .nth(0)
+                .unwrap();
+            (misplaced_priority, 1 + badge_priority as u32)
+        })
+        .reduce(|acc, e| (acc.0 + e.0, acc.1 + e.1))
+        .unwrap();
+
+    println!("        part 1: {}", misplaced_sum);
+    println!("        part 2: {}", badge_sum);
+    println!("");
+    
     Ok(())
 }
 
 pub fn run() -> io::Result<()> {
     println!("Day 3:");
-    realistic()
+    realistic().and(ugly())
 }

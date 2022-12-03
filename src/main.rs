@@ -34,6 +34,7 @@ fn main() -> io::Result<()> {
             _ => day2::functional(),
         },
         "day3" => match &variant[..] {
+            "ugly" => day3::ugly(),
             _ => day3::realistic(),
         }
         _ => Err(io::Error::new(io::ErrorKind::Other, "oh no!")),

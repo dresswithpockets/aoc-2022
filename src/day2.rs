@@ -25,6 +25,7 @@ pub fn functional() -> io::Result<()> {
 
     println!("        part 1: {}", score.0);
     println!("        part 2: {}", score.1);
+    println!("");
 
     Ok(())
 }
