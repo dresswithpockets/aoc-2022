@@ -3,10 +3,10 @@ use std::fs::File;
 use std::io::{self, prelude::*, BufReader};
 use std::vec::Vec;
 
-fn day1_progscan() -> io::Result<()> {
+pub fn progscan() -> io::Result<()> {
     println!("    Progressive Scan: ");
 
-    let file = File::open("day1.txt")?;
+    let file = File::open("input/day1.txt")?;
     let reader = BufReader::new(file);
 
     let mut totals = Vec::new();
@@ -32,10 +32,10 @@ fn day1_progscan() -> io::Result<()> {
     Ok(())
 }
 
-fn day1_functional() -> io::Result<()> {
+pub fn functional() -> io::Result<()> {
     println!("    Functional: ");
 
-    let mut totals: Vec<i32> = fs::read_to_string("day1.txt")?
+    let mut totals: Vec<i32> = fs::read_to_string("input/day1.txt")?
         .split("\n\n")
         .map(|elf_set| {
             elf_set
@@ -54,7 +54,7 @@ fn day1_functional() -> io::Result<()> {
     Ok(())
 }
 
-fn run() -> io::Result<()> {
+pub fn run() -> io::Result<()> {
     println!("Day 1: ");
     progscan().and(functional())
 }
