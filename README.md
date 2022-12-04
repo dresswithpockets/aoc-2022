@@ -1,6 +1,6 @@
 # Advent Of Code 2022 Solutions
 
-Solutions written in Rust. Screenshots taken using [rayso](https://ray.so/).
+Solutions written in Rust. Screenshots taken using [rayso](https://ray.so/) and [carbon](https://carbon.now.sh/).
 
 ## Day 1
 ### Functional
