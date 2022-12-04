@@ -25,3 +25,8 @@ I have multiple styles of solutions for many of the tasks. For example, for Day 
 For the sake of making a "consise" solution to this task, I converted my <a href="src/day3.rs#L75">cleaner solution</a> to the following approach.
 
 <img src="images/day3_ugly_.png" />
+
+## Day 4
+### Functional
+
+<img src="images/day4_functional.png" />
