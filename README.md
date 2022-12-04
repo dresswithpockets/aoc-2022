@@ -2,6 +2,8 @@
 
 Solutions written in Rust. Screenshots taken using [rayso](https://ray.so/) and [carbon](https://carbon.now.sh/).
 
+I have multiple styles of solutions for many of the tasks. For example, for Day 1, I took a Progressive-Scan approach, and then completed the task in a more Functional way using iterators directly.
+
 ## Day 1
 ### Functional
 <img src="images/day1_functional.png" />
@@ -19,4 +21,7 @@ Solutions written in Rust. Screenshots taken using [rayso](https://ray.so/) and 
 
 ## Day 3
 ### Functional (and ugly)
+
+For the sake of making a "consise" solution to this task, I converted my <a href="src/day3.rs#L75">cleaner solution</a> to the following approach.
+
 <img src="images/day3_ugly_.png" />
