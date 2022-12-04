@@ -1,6 +1,7 @@
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 use std::env;
 use std::io;
@@ -10,7 +11,10 @@ fn print_usage(cmd: &String) {
 }
 
 fn run_all() -> io::Result<()> {
-    day1::run().and(day2::run()).and(day3::run())
+    day1::run()
+        .and(day2::run())
+        .and(day3::run())
+        .and(day4::run())
 }
 
 fn main() -> io::Result<()> {
@@ -36,7 +40,7 @@ fn main() -> io::Result<()> {
         "day3" => match &variant[..] {
             "ugly" => day3::ugly(),
             _ => day3::realistic(),
-        }
+        },
         _ => Err(io::Error::new(io::ErrorKind::Other, "oh no!")),
     };
 
