@@ -27,7 +27,7 @@ pub fn progscan() -> io::Result<()> {
 
     println!("        top 1: {}", totals[0]);
     println!("        top 3 sum: {}", totals[0] + totals[1] + totals[2]);
-    println!("");
+    println!();
 
     Ok(())
 }
@@ -39,7 +39,7 @@ pub fn functional() -> io::Result<()> {
         .split("\n\n")
         .map(|elf_set| {
             elf_set
-                .split("\n")
+                .split('\n')
                 .filter_map(|x| x.trim().parse::<i32>().ok())
                 .sum()
         })
@@ -49,7 +49,7 @@ pub fn functional() -> io::Result<()> {
 
     println!("        top 1: {}", totals[0]);
     println!("        top 3 sum: {}", totals.iter().take(3).sum::<i32>());
-    println!("");
+    println!();
 
     Ok(())
 }

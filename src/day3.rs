@@ -63,10 +63,8 @@ impl From<&str> for Sack {
 impl<'a> From<&'a[Sack]> for Group<'a> {
     fn from(sacks: &'a[Sack]) -> Group<'a> {
         Group {
-            sacks: sacks,
-            badge_id: (0usize..52usize)
-                .filter(|i| sacks.into_iter().all(|sack| sack.has_in_either(*i)))
-                .nth(0)
+            sacks,
+            badge_id: (0usize..52usize).find(|i| sacks.iter().all(|sack| sack.has_in_either(*i)))
                 .unwrap(),
         }
     }
@@ -76,14 +74,15 @@ pub fn realistic() -> io::Result<()> {
     println!("    Realistic:");
 
     let sacks: Vec<Sack> = fs::read_to_string("input/day3.txt")?
-        .split("\n")
+        .split('\n')
         .map(Sack::from)
         .collect();
     
+    #[allow(clippy::needless_collect)] // allowing for the sake of legibility.
     let groups: Vec<Group> = sacks.chunks(3).map(Group::from).collect();
 
     let (misplaced_sum, badge_sum) = groups.into_iter().map(|group| {
-            let misplaced_sum = group.sacks.into_iter().map(|sack| {
+            let misplaced_sum = group.sacks.iter().map(|sack| {
                 (0..52).map(|i| {
                     if sack.left[i] > 0 && sack.right[i] > 0 {
                         id_to_priority(i)
@@ -102,7 +101,7 @@ pub fn realistic() -> io::Result<()> {
 
     println!("        part 1: {}", misplaced_sum);
     println!("        part 2: {}", badge_sum);
-    println!("");
+    println!();
 
     Ok(())
 }
@@ -113,7 +112,7 @@ pub fn ugly() -> io::Result<()> {
 
     let sacks: Vec<Vec<(usize, usize)>> = fs::read_to_string("input/day3.txt")
         .unwrap()
-        .split("\n")
+        .split('\n')
         .map(|line| {
             let (left_str, right_str) = line.split_at(line.len() / 2);
             let occurances: Vec<(usize, usize)> = ('a'..='z').chain('A'..='Z')
@@ -125,7 +124,7 @@ pub fn ugly() -> io::Result<()> {
     
     let (misplaced_sum, badge_sum) = sacks.chunks(3)
         .map(|group| {
-            let misplaced_priority = group.into_iter()
+            let misplaced_priority = group.iter()
                 .map(|sack| (0usize..52usize)
                      .map(|i| if sack[i].0 > 0 && sack[i].1 > 0 {
                          1 + i as u32
@@ -135,9 +134,7 @@ pub fn ugly() -> io::Result<()> {
                      .sum::<u32>())
                 .sum::<u32>();
             let badge_priority = (0usize..52usize)
-                .filter(|i| group.into_iter()
-                        .all(|sack| sack[*i].0 > 0 || sack[*i].1 > 0))
-                .nth(0)
+                .find(|i| group.iter().all(|sack| sack[*i].0 > 0 || sack[*i].1 > 0))
                 .unwrap();
             (misplaced_priority, 1 + badge_priority as u32)
         })
@@ -146,7 +143,7 @@ pub fn ugly() -> io::Result<()> {
 
     println!("        part 1: {}", misplaced_sum);
     println!("        part 2: {}", badge_sum);
-    println!("");
+    println!();
     
     Ok(())
 }

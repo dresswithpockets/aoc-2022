@@ -2,12 +2,13 @@ use itertools::Itertools;
 use std::fs;
 use std::io;
 
+#[allow(clippy::identity_op)]
 pub fn functional() -> io::Result<()> {
     println!("    Functional:");
 
     let score = fs::read_to_string("input/day2.txt")?
-        .split("\n")
-        .map(|line| match line.splitn(2, " ").collect_tuple() {
+        .split('\n')
+        .map(|line| match line.splitn(2, ' ').collect_tuple() {
             Some(("A", "X")) => (1 + 3, 3 + 0),
             Some(("A", "Y")) => (2 + 6, 1 + 3),
             Some(("A", "Z")) => (3 + 0, 2 + 6),
@@ -25,7 +26,7 @@ pub fn functional() -> io::Result<()> {
 
     println!("        part 1: {}", score.0);
     println!("        part 2: {}", score.1);
-    println!("");
+    println!();
 
     Ok(())
 }

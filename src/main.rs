@@ -34,13 +34,12 @@ fn main() -> io::Result<()> {
             "functional" => day1::functional(),
             _ => day1::progscan(),
         },
-        "day2" => match &variant[..] {
-            _ => day2::functional(),
-        },
+        "day2" => day2::functional(),
         "day3" => match &variant[..] {
             "ugly" => day3::ugly(),
             _ => day3::realistic(),
         },
+        "day4" => day4::functional(),
         _ => Err(io::Error::new(io::ErrorKind::Other, "oh no!")),
     };
 
