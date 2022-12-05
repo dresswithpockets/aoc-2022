@@ -1,6 +1,8 @@
+
 use itertools::Itertools;
-use std::fs::File;
-use std::io::{self, prelude::*, BufReader};
+use std::fs;
+use std::io;
+use std::str::FromStr;
 
 struct Move {
     count: usize,
@@ -8,68 +10,77 @@ struct Move {
     to: usize,
 }
 
-impl From<String> for Move {
-    fn from(line: String) -> Move {
-        let (_, count, _, from, _, to) = line.split(' ').collect_tuple().unwrap();
-        Move {
+type Stack = Vec<char>;
+
+type Cargo = Vec<Stack>;
+
+impl Move {
+    fn apply_series(&self, cargo: &mut Cargo) {
+        for _ in 0..self.count {
+            let popped = cargo[self.from].pop().unwrap();
+            cargo[self.to].push(popped);
+        }
+    }
+
+    fn apply_chunk(&self, cargo: &mut Cargo) {
+        // note(ash) could probably have a shared move stack used across all apply_chunk calls
+        let mut move_stack = Vec::new();
+        for _ in 0..self.count {
+            let popped = cargo[self.from].pop().unwrap();
+            move_stack.push(popped);
+        }
+
+        while !move_stack.is_empty() {
+            cargo[self.to].push(move_stack.pop().unwrap());
+        }
+    }
+}
+
+impl FromStr for Move {
+    type Err = i32;
+
+    fn from_str(s: &str) -> Result<Move, Self::Err> {
+        let (_, count, _, from, _, to) = s.split(' ').collect_tuple().unwrap();
+        Ok(Move {
             count: count.parse::<usize>().unwrap(),
             from: from.parse::<usize>().unwrap() - 1,
             to: to.parse::<usize>().unwrap() - 1
-        }
+        })
     }
 }
 
-fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> where T: Clone, {
-    assert!(!v.is_empty());
-    (0..v[0].len())
-        .map(|i| v.iter().map(|inner| inner[i].clone()).collect::<Vec<T>>())
-        .collect()
-}
+fn parse_input() -> (Vec<Move>, Cargo) {
+    let data = fs::read_to_string("input/day5.txt").unwrap();
+    let (cargo_chunk, move_chunk) = data.split_once("\n\n").unwrap();
 
-fn parse_input() -> (Vec<Move>, Vec<Vec<char>>) {
-    let mut moves: Vec<Move> = Vec::new();
-    let mut cargo_queue: Vec<Vec<Option<char>>> = Vec::new();
+    let cargo_lines = cargo_chunk.lines().rev().collect_vec();
+    let stack_count = cargo_lines.first().unwrap().len() / 4 + 1;
 
-    let file = File::open("input/day5.txt").unwrap();
-    let reader = BufReader::new(file);
+    let mut cargo = (0..stack_count).map(|_| Stack::new()).collect::<Cargo>();
 
-    let mut in_move_list = false;
+    // the first line in the reversed chunk will be the numbers for each stack, so we just skip it
+    // and iterate over the rest
+    for line in cargo_lines.iter().skip(1) {
+        // columns are always 4 spaces wide, padded to fill the entire matrix
+        let chunks = line.chars().chunks(4);
 
-    for line in reader.lines() {
-        let line = line.unwrap();
-        if line.is_empty() {
-            in_move_list = true;
-            continue;
-        }
-
-        if in_move_list {
-            moves.push(Move::from(line));
-        } else if line.starts_with('[') {
-            let r: Vec<Option<char>> = line.chars()
-                .collect::<Vec<char>>()
-                .chunks(4)
-                .map(|c| if c[0] == '[' { Some(c[1]) } else { None })
-                .collect();
+        // each stack character is the 2nd item in each chunk of 4
+        let row = chunks.into_iter().map(|mut c| c.nth(1).unwrap());
+        
+        for (i, c) in row.enumerate() {
+            // we can skip adding whitespace to each cargo stack - there will never be white
+            // space between two items in a stack
+            if c.is_whitespace() {
+                continue;
+            }
             
-            cargo_queue.push(r);
+            cargo[i].push(c);
         }
     }
 
-    // transpose row-major into column-major
-    let transposed = transpose(cargo_queue);
+    let moves = move_chunk.lines().filter_map(|line| line.parse::<Move>().ok()).collect_vec();
 
-    // get rid of None's each column
-    let mut cargo_stack = transposed
-        .iter()
-        .map(|e| e.iter().filter_map(|i| *i).collect_vec())
-        .collect_vec();
-
-    // transpose() transposes diagonally; items are in reverse order, so reverse each row in column-major
-    for stack in cargo_stack.iter_mut() {
-        stack.reverse();
-    }
-
-    (moves, cargo_stack)
+    (moves, cargo)
 }
 
 pub fn imperative() -> io::Result<()> {
@@ -79,36 +90,13 @@ pub fn imperative() -> io::Result<()> {
 
     let mut part_2_stack = part_1_stack.iter().cloned().collect_vec();
 
-    // move according to part-1 behaviour (one item at a time)
     for m in moves.iter() {
-        for _ in 0..m.count {
-            let popped = part_1_stack[m.from].pop().unwrap();
-            part_1_stack[m.to].push(popped);
-        }
+        m.apply_series(&mut part_1_stack);
+        m.apply_chunk(&mut part_2_stack);
     }
 
-    // move according to part-2 behaviour (n items at a time, retain order)
-    let mut move_stack = Vec::new();
-    for m in moves.iter() {
-        for _ in 0..m.count {
-            let popped = part_2_stack[m.from].pop().unwrap();
-            move_stack.push(popped);
-        }
-
-        while !move_stack.is_empty() {
-            part_2_stack[m.to].push(move_stack.pop().unwrap());
-        }
-    }
-
-    let mut part_1_string = String::new();
-    for stack in part_1_stack {
-        part_1_string.push(*stack.last().unwrap());
-    }
-
-    let mut part_2_string = String::new();
-    for stack in part_2_stack {
-        part_2_string.push(*stack.last().unwrap());
-    }
+    let part_1_string = part_1_stack.iter().map(|stack| stack.last().unwrap()).collect::<String>();
+    let part_2_string = part_2_stack.iter().map(|stack| stack.last().unwrap()).collect::<String>();
 
     println!("        part 1: {}", part_1_string);
     println!("        part 2: {}", part_2_string);
