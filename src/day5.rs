@@ -26,18 +26,17 @@ fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> where T: Clone, {
         .collect()
 }
 
-pub fn imperative() -> io::Result<()> {
-    println!("    Imperative:");
+fn parse_input() -> (Vec<Move>, Vec<Vec<char>>) {
     let mut moves: Vec<Move> = Vec::new();
     let mut cargo_queue: Vec<Vec<Option<char>>> = Vec::new();
 
-    let file = File::open("input/day5.txt")?;
+    let file = File::open("input/day5.txt").unwrap();
     let reader = BufReader::new(file);
 
     let mut in_move_list = false;
 
     for line in reader.lines() {
-        let line = line?;
+        let line = line.unwrap();
         if line.is_empty() {
             in_move_list = true;
             continue;
@@ -56,18 +55,29 @@ pub fn imperative() -> io::Result<()> {
         }
     }
 
+    // transpose row-major into column-major
     let transposed = transpose(cargo_queue);
+
+    // get rid of None's each column
     let mut cargo_stack = transposed
         .iter()
-        .map(|e| e.iter().filter_map(|i| i.as_ref()).collect_vec())
+        .map(|e| e.iter().filter_map(|i| *i).collect_vec())
         .collect_vec();
 
-    // transposed into reverse stack order, have to inverse
+    // transpose() transposes diagonally; items are in reverse order, so reverse each row in column-major
     for stack in cargo_stack.iter_mut() {
         stack.reverse();
     }
 
-    let mut part_1_stack = cargo_stack.iter().cloned().collect_vec();
+    (moves, cargo_stack)
+}
+
+pub fn imperative() -> io::Result<()> {
+    println!("    Imperative:");
+    
+    let (moves, mut part_1_stack) = parse_input();
+
+    let mut part_2_stack = part_1_stack.iter().cloned().collect_vec();
 
     // move according to part-1 behaviour (one item at a time)
     for m in moves.iter() {
@@ -81,23 +91,23 @@ pub fn imperative() -> io::Result<()> {
     let mut move_stack = Vec::new();
     for m in moves.iter() {
         for _ in 0..m.count {
-            let popped = cargo_stack[m.from].pop().unwrap();
+            let popped = part_2_stack[m.from].pop().unwrap();
             move_stack.push(popped);
         }
 
         while !move_stack.is_empty() {
-            cargo_stack[m.to].push(move_stack.pop().unwrap());
+            part_2_stack[m.to].push(move_stack.pop().unwrap());
         }
     }
 
     let mut part_1_string = String::new();
     for stack in part_1_stack {
-        part_1_string.push(**stack.last().unwrap());
+        part_1_string.push(*stack.last().unwrap());
     }
 
     let mut part_2_string = String::new();
-    for stack in cargo_stack {
-        part_2_string.push(**stack.last().unwrap());
+    for stack in part_2_stack {
+        part_2_string.push(*stack.last().unwrap());
     }
 
     println!("        part 1: {}", part_1_string);
