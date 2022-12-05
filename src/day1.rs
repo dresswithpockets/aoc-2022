@@ -39,7 +39,7 @@ pub fn functional() -> io::Result<()> {
         .split("\n\n")
         .map(|elf_set| {
             elf_set
-                .split('\n')
+                .lines()
                 .filter_map(|x| x.trim().parse::<i32>().ok())
                 .sum()
         })

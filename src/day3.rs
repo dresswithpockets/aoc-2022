@@ -74,7 +74,7 @@ pub fn realistic() -> io::Result<()> {
     println!("    Realistic:");
 
     let sacks: Vec<Sack> = fs::read_to_string("input/day3.txt")?
-        .split('\n')
+        .lines()
         .map(Sack::from)
         .collect();
     
@@ -112,7 +112,7 @@ pub fn ugly() -> io::Result<()> {
 
     let sacks: Vec<Vec<(usize, usize)>> = fs::read_to_string("input/day3.txt")
         .unwrap()
-        .split('\n')
+        .lines()
         .map(|line| {
             let (left_str, right_str) = line.split_at(line.len() / 2);
             let occurances: Vec<(usize, usize)> = ('a'..='z').chain('A'..='Z')

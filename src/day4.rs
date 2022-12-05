@@ -7,7 +7,7 @@ pub fn functional() -> io::Result<()> {
 
     let range_pairs: Vec<((i32, i32), (i32, i32))> = fs::read_to_string("input/day4.txt")?
         .trim()
-        .split('\n')
+        .lines()
         .map(|line| {
             line.split(',')
                 .map(|range| {
