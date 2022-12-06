@@ -36,3 +36,8 @@ For the sake of making a "consise" solution to this task, I converted my <a href
 
 The imaged solution here is altered a bit to make it small enough to fit in the image realistically. You can see the full implementation <a href="src/day5.rs#L86">here</a>.
 <img src="images/day5_imperative.png" />
+
+## Day 6
+### Imperative
+
+![Day 6 Imperative Solution](images/day6_imperative.svg)
