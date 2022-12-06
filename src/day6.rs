@@ -2,14 +2,17 @@ use itertools::Itertools;
 use std::fs;
 use std::hash::Hash;
 
-fn find_first_unique_chunk<I: Clone + Eq + Hash>(v: &Vec<I>, n: usize) -> Option<usize> {
+fn find_first_unique_chunk<I>(v: &Vec<I>, n: usize) -> Option<usize>
+where
+    I: Clone + Eq + Hash,
+{
     let offset = n - 1;
-    (offset..v.len()).find(|i| v[i-offset..=*i].iter().unique().count() == n)
+    (offset..v.len()).find(|i| v[i - offset..=*i].iter().unique().count() == n)
 }
 
 pub fn imperative() {
     println!("  Imperative:");
-    
+
     let input = fs::read_to_string("input/day6.txt").unwrap();
     let chars = input.trim().chars().collect::<Vec<char>>();
 
