@@ -1,11 +1,10 @@
 use std::fs;
 
-pub fn imperative() -> Result {
-    
-    Ok(())
+pub fn imperative() {
+
 }
 
-pub fn run() -> Result {
+pub fn run() {
     println!("Day 6:");
-    imperative()
+    imperative();
 }
