@@ -7,6 +7,7 @@ pub fn functional() -> io::Result<()> {
     println!("    Functional:");
 
     let score = fs::read_to_string("input/day2.txt")?
+        .trim()
         .lines()
         .map(|line| match line.splitn(2, ' ').collect_tuple() {
             Some(("A", "X")) => (1 + 3, 3 + 0),
