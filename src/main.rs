@@ -3,6 +3,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 
 use std::env;
 use std::io;
@@ -16,7 +17,9 @@ fn run_all() -> io::Result<()> {
         .and(day2::run())
         .and(day3::run())
         .and(day4::run())
-        .and(day5::run())
+        .and(day5::run());
+    day6::run();
+    Ok(())
 }
 
 fn main() -> io::Result<()> {
